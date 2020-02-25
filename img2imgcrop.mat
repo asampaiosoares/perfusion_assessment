@@ -1,0 +1,14 @@
+clear all; close all; clc
+
+workingDir = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\Case18\Case18_ICG_sample'
+imageNames = dir(fullfile(workingDir,'*.png'));
+
+
+for i = 1: length(imageNames)
+    img = imread(strcat(imageNames(i).folder,'/',imageNames(i).name));
+    img = imcrop(img, [481,6,1920-481,1075-6]); 
+    %img = imcrop(img, [481,1,1920-481,1080-1]); 
+    imwrite(img, strcat(imageNames(i).folder,'/',imageNames(i).name));
+    %figure;imshow(img)
+    
+end
