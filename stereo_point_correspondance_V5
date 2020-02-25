@@ -1,0 +1,795 @@
+%% Measure Distance from Stereo Camera to a Face
+%%
+
+clear all;
+close all; clc
+
+to_print = 1; % if 1 print if 0 no print
+to_save = 0; % if 1 save to results folder if 0 donot save
+wind_or_regmask =2; %if 1 use mean of window size if 2 use mean of the whole region obtained using the mask
+
+% Load stereo parameters.
+% MSI calibration images
+% IR calibration images
+
+%% CASE 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cm_pts = 8;
+% tag ='Case1_PreICG';
+% IR_img = './data/Case1/IR/ICG_min_max/2scale_IR_040670.png';
+% ICG_img = './data/Case1/IR/ICG_min_max/2scale_040670.png';
+% 
+% MSI_img = './MSI output summary/Case 1 PreICG F1_14.58.48.016_BGcorr_RGB.png';
+% load('./MSI output summary/Case 1 PreICG F1_14.58.48.016_BGcorrOutputData.mat')
+% 
+% load('./results/Case1/stereoCalibration/Case1_StereoParams2.mat');
+% outpath = './results/Case1/stereoCalibration';
+% 
+% % Line segment coordinates  - closed point first
+% % Points for Calibration 1
+% % I1pts = [1341 865 1641 189];
+% % I2pts = [456 443 1127 81];
+% 
+% % Points for Calibration 2
+% I1pts = [1375 967 1636 182];
+% I2pts = [481 523 1119 129];
+% 
+% IR_img_mask = './data/data_masks/Case_1/2scale_040670_color_mask.png';
+% MSI_img_mask = './data/data_masks/Case_1/PreCal_I0505_F2_F480-25_2019-05-07_15_color_mask.png';
+
+%% CASE 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cm_pts = 10;
+% tag ='Case2_PostICG';
+% IR_img = './data/Case2/IR/ICG_washin/2scale_IR_37030_resize.png';
+% ICG_img = './data/Case2/IR/ICG_washin/2scale_037040.png';
+% 
+% MSI_img = './MSI output summary/Case 2 PostICG F1_18.43.40.671_RGB.png';
+% load('./MSI output summary/Case 2 PostICG F1_18.43.40.671OutputData.mat')
+% 
+% load('./results/Case2/stereoCalibration/Case2_StereoParams.mat');    % Calibration parameters
+% outpath = './results/Case2/stereoCalibration';
+% 
+% %Line segment coordinates  - closed point first
+% I1pts = [1414 830 430 171];
+% I2pts = [905 513 619 143];
+% 
+% IR_img_mask = './data/data_masks/Case_2/Colon annotation/2scale_037040_color_mask.png';
+% MSI_img_mask = './data/data_masks/Case_2/Colon annotation/TissueImg_I0231_F8_F645-17_2019-05-07_18_color_mask.png';
+
+
+%% CASE 3  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cm_pts = 10;
+% tag ='Case3_PostICG';
+% 
+% IR_img = './data/Case3/IR/ICG_min_max/IR_445.250_upsize.png';
+% ICG_img = './data/Case3/IR/ICG_min_max/445.250.png';
+% 
+% MSI_img = './MSI output summary/Case 3 PostICG F1_12.47.09.062_RGB.png';
+% load('./MSI output summary/Case 3 PostICG F1_12.47.09.062OutputData.mat')
+% 
+% load('./results/Case3/stereoCalibration/Case3_StereoParams.mat');
+% outpath = './results/Case3/stereoCalibration';
+% 
+% % Line segment coordinates  - closed point first
+% I1pts = [1192 864 114 598];
+% I2pts = [688 532 217 178];
+% 
+% IR_img_mask = './data/data_masks/Case_3/445_color_mask.png';
+% MSI_img_mask = './data/data_masks/Case_3/Case 3 PostICG F1_12_color_mask.png';
+
+%% CASE 4  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cm_pts = 15;
+% %Position 1
+% tag ='Case4_PreICG';
+% IR_img = './data/Case4/IR/ICG_min_max/IR_744.000_upsize.png';
+% ICG_img = './data/Case4/IR/ICG_min_max/ICG_744.000.png';
+%
+% MSI_img = './MSI output summary/Case 4 PreICG F1_14.28.50.987_RGB.png';
+% load('./MSI output summary/Case 4 PreICG F1_14.28.50.987OutputData.mat')
+%
+% load('./results/Case4/stereoCalibration/Case4_StereoParams.mat');
+% outpath = './results/Case4/stereoCalibration';
+%
+% % Line segment coordinates  - closed point first
+% %for position 1
+% I1pts = [1002 675 16 510];
+% I2pts = [1081 650 490 383];
+
+% % Position2
+% tag ='Case4_PostICG';
+% IR_img = './data/Case4/IR/ICG_min_max/IR_777.000_upsize.png';
+% ICG_img = './data/Case4/IR/ICG_min_max/ICG_777.000.png';
+%
+% MSI_img = './MSI output summary/Case 4 PostICG F1_14.32.05.863_RGB.png';
+% load('./MSI output summary/Case 4 PostICG F1_14.32.05.863OutputData.mat')
+%
+% load('./results/Case4/stereoCalibration/Case4_StereoParams.mat');
+% outpath = './results/Case4/stereoCalibration';
+%
+% %for position 2 - camera moved slightly towards left
+% I1pts = [1130 636 113 419];
+% I2pts = [1157 644 575 346];
+
+
+%% CASE 5  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cm_pts = 6;
+%
+% tag ='Case5_PreICG';
+%
+% IR_img = './data/Case5/IR/ICG_min_max/IR_267.917_upsize.png';
+% ICG_img = './data/Case5/IR/ICG_min_max/ICG_267.917.png';
+%
+% MSI_img = './MSI output summary/Case 5 PreICG F1_16.34.32.407_RGB.png';
+% load('./MSI output summary/Case 5 PreICG F1_16.34.32.407OutputData.mat')
+%
+%
+% load('./results/Case5/stereoCalibration/Case5_StereoParams.mat');
+% outpath = './results/Case5/stereoCalibration';
+%
+% % Line segment coordinates  - closed point first
+% % PreICG
+% I1pts = [1162 737 421 403];
+% I2pts = [741 731 350 551];
+
+% % Line segment coordinates  - closed point first
+% % PosICG
+% I1pts = [1162 737 421 403];
+% I2pts = [797 775 444 556];
+
+% old
+% I1pts = [1159 738 315 357];
+% I2pts = [797 759 464 515];
+% old
+% I1pts = [1159 738 418 404];
+% I2pts = [797 759 424 549];
+
+
+%% CASE 6  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cm_pts = 10;
+% tag ='Case6_PreICG';
+%
+% % load('./results/Case6/seq1/stereoParams.mat');
+% % %Line segment coordinates  - closed point first
+% % %Sequence 1 : Small bowel with calibration 1
+% % IR_img = './data/Case6/IR/ICG_min_max/calibration1/ICG_274.png';
+% % MSI_img = './data/Case6/MSI/Position1/11.242_F8.png';
+% % outpath = './results/Case6/seq1';
+% % I1pts = [1182 935 81 484];
+% % I2pts = [865 977 617 763];
+%
+%
+% load('./results/Case6/seq2/stereoParams2.mat');
+% % Line segment coordinates  - closed point first
+% % Sequence 2 : Small bowel with calibration 1
+%
+% IR_img = './data/Case6/IR/ICG_min_max/calibration2/IR_936_upsize.png';
+% ICG_img = './data/Case6/IR/ICG_min_max/calibration2/ICG_936.png';
+%
+% MSI_img = './MSI output summary/Case 6 PreICG F1_12.35.40.773_RGB.png';
+% load('./MSI output summary/Case 6 PreICG F1_12.35.40.773OutputData.mat')
+%
+% outpath = './results/Case6/seq2';
+% I1pts = [608 1045 641 407];
+% I2pts = [635 629 805 395];
+
+%% CASE 7  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cm_pts = 15;
+% 
+% tag ='Case7_PostICG';
+% 
+% IR_img = './data/Case7/IR/ICG_min_max/IR_126_upsize.png';
+% ICG_img = './data/Case7/IR/ICG_min_max/ICG_126.png';
+% 
+% MSI_img = './MSI output summary/Case 7 PostICG F1_14.35.35.765_RGB.png';
+% load('./MSI output summary/Case 7 PostICG F1_14.35.35.765OutputData.mat')
+% 
+% 
+% load('./results/Case7/stereoCalibration/stereoParams.mat');
+% outpath = './results/Case7/stereoCalibration';
+% 
+% % Line segment coordinates  - closed point first
+% I1pts = [1339 491 362 885];
+% I2pts = [969 553 412 649];
+
+
+%% CASE 8  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cm_pts = 10;
+%
+% tag ='Case8_PostICG';
+%
+% IR_img = './data/Case8/IR/ICG_min_max/IR_499_upsize.png';
+% ICG_img = './data/Case8/IR/ICG_min_max/ICG_499.png';
+%
+% MSI_img = './MSI output summary/Case 8 PostICG F1_12.39.48.924_RGB.png';
+% load('./MSI output summary/Case 8 PostICG F1_12.39.48.924OutputData.mat')
+%
+% load('./results/Case8/stereoCalibration/stereoParams2.mat'); % calibration 2 is better
+% outpath = './results/Case8/stereoCalibration';
+%
+% % Line segment coordinates  - closed point first
+% I1pts = [543 930 1365 519];  % IR
+% I2pts = [314 577 899 657];   %
+
+
+%% CASE 9  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cm_pts = 10;
+%
+% tag ='Case9_PostICG';
+%
+% IR_img = './data/Case9/IR/ICG_min_max/IR_31_upsize.png';
+% ICG_img = './data/Case9/IR/ICG_min_max/ICG_31.png';
+%
+% MSI_img = './MSI output summary/Case 9 PostICG F1_16.27.07.309_RGB.png';
+% load('./MSI output summary/Case 9 PostICG F1_16.27.07.309OutputData.mat')
+%
+% load('./results/Case9/stereoCalibration/stereoParams2.mat'); % calibration 2 is better
+% outpath = './results/Case9/stereoCalibration';
+%
+% % Line segment coordinates  - closed point first
+% I1pts = [1281 598 704 345];
+% I2pts = [990 675 804 451];
+
+%% CASE 10  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cm_pts = 10;
+% 
+% tag ='Case10_PostICG';
+% 
+% IR_img = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\Case10\IR\ICG_min_max\IR_476_upsize.png';
+% ICG_img = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\Case10\IR\ICG_min_max\ICG_476.png';
+% 
+% MSI_img = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\MSI output summary/Case 10 PostICG UCLH_I0379_F1_F470-20_2019-08-09_12.19.38.090._RGB.png';
+% load('C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\MSI output summary/Case 10 PostICG UCLH_I0379_F1_F470-20_2019-08-09_12.19.38.090.OutputData.mat')
+% 
+% load('C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\results\Case10\stereoCalibration/stereoParams.mat'); % calibration 2 is better
+% outpath = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\results\Case10\stereoCalibration/steroCalibration';
+% 
+% % Line segment coordinates  - closed point first
+% I1pts = [1281 598 704 345];
+% I2pts = [990 675 804 451];
+% 
+% IR_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_10\ICG_476_color_mask.png';
+% MSI_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_10\Case 10 PreICG F1_12_color_mask.png';
+
+
+% %%% CASE 11  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cm_pts = 10;
+% 
+% tag ='Case11_PostICG';
+% 
+% IR_img = './data/Case11/IR/ICG_min_max/IR_356_upsize.png';
+% ICG_img = './data/Case11/IR/ICG_min_max/ICG_356.png';
+% 
+% MSI_img = './MSI output summary/Case 11 PostICG F1_16.54.34.214_RGB.png';
+% load('./MSI output summary/Case 11 PreICG F1_16.52.32.168OutputData.mat')
+% 
+% load('./results/Case11/stereoCalibration/stereoParams.mat'); % calibration 2 is better
+% outpath = './results/Case11/steroCalibration';
+% 
+% % Line segment coordinates  - closed point first
+% I1pts = [1281 598 704 345];
+% I2pts = [990 675 804 451];
+% 
+% IR_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_11\ICG_356_color_mask.png';
+% MSI_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_11\60732_color_mask.png';
+
+%% CASE 13  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cm_pts = 10;
+% 
+% tag ='Case13_PostICG';
+% 
+% IR_img = './data/Case13/IR/ICG_min_max/IR_268_upsize.png';
+% ICG_img = './data/Case13/IR/ICG_min_max/ICG_268.png';
+% 
+% MSI_img = './MSI output summary/Case 13 PostICG F1_15.38.30.703_RGB.png';
+% load('./MSI output summary/Case 13 PreICG F1_15.38.30.703OutputData.mat')
+% 
+% load('./results/Case13/stereoCalibration/stereoParams.mat'); % calibration 2 is better
+% outpath = './results/Case13/steroCalibration';
+% 
+% % Line segment coordinates  - closed point first
+% I1pts = [215 723 692 552];
+% I2pts = [299 661 500 594];
+% 
+% IR_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_13\ICG_268_color_mask.png';
+% MSI_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_13\Case 13 PostICG F1_15_color_mask.png';
+
+%% CASE 14  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cm_pts = 10;
+% 
+% tag ='Case13_PostICG';
+% 
+% IR_img = './data/Case14/IR/ICG_min_max/IR_332_upsize.png';
+% ICG_img = './data/Case14/IR/ICG_min_max/ICG_332.png';
+% 
+% MSI_img = './MSI output summary/Case 14 PostICG F1_10.59.10.048_RGB.png';
+% load('./MSI output summary/Case 14 PostICG F1_10.59.10.048OutputData.mat')
+% 
+% load('./results/Case14/stereoCalibration/stereoParams.mat'); % calibration 2 is better
+% outpath = './results/Case14/steroCalibration';
+% 
+% % Line segment coordinates  - closed point first
+% I1pts = [1235 775 1181 927];
+% I2pts = [1091 688 1032 778];
+% 
+% IR_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_14\ICG_332_color_mask.png';
+% MSI_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_14\Case 14 PostICG F1_10_color_mask.png';
+% 
+
+%% CASE 15  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cm_pts = 10;
+% 
+% tag ='Case15_PostICG';
+% 
+% IR_img = './data/Case15/IR/ICG_min_max/IR_315_upsize.png';
+% ICG_img = './data/Case15/IR/ICG_min_max/ICG_315.png';
+% 
+% MSI_img = './MSI output summary/Case 15 PostICG F1_11.21.44.631_RGB.png';
+% load('./MSI output summary/Case 15 PreICG F1_11.21.44.631OutputData.mat')
+% 
+% load('./results/Case15/stereoCalibration/stereoParams.mat'); % calibration 2 is better
+% outpath = './results/Case15/steroCalibration';
+% 
+% 
+% % Line segment coordinates  - closed point first
+% I1pts = [639 245 702 1050];
+% I2pts = [522 598 410 810];
+% 
+% IR_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_15\ICG_315_color_mask.png';
+% MSI_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_15\Case 15 PostICG F1_11_color_mask.png';
+
+% %% CASE 16  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cm_pts = 10;
+% 
+% tag ='Case16_PostICG';
+% 
+% IR_img = './data/Case16/IR/ICG_min_max/IR_124_upsize.png';
+% ICG_img = './data/Case16/IR/ICG_min_max/ICG_124.png';
+% 
+% MSI_img = './MSI output summary/Case 16 PostICG F1_13.07.42.792_RGB.png';
+% load('./MSI output summary/Case 16 PostICG F1_13.07.42.792OutputData.mat')
+% 
+% load('./results/Case16/stereoCalibration/stereoParams.mat'); % calibration 2 is better
+% outpath = './results/Case16/steroCalibration';
+% 
+% % Line segment coordinates  - closed point first
+% I1pts = [1281 598 704 345];
+% I2pts = [990 675 804 451];
+% 
+% IR_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_16\ICG_124_color_mask.png';
+% MSI_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_16\Case 16 PostICG F1_13_color_mask.png';
+
+% %% CASE 17  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+cm_pts = 10;
+
+tag ='Case17_PostICG';
+
+IR_img = './data/Case17/IR/ICG_min_max/IR_159_upsize.png';
+ICG_img = './data/Case17/IR/ICG_min_max/ICG_159.png';
+
+MSI_img = './MSI output summary/Case 17 PostICG F1_11.48.21.661_RGB.png';
+load('./MSI output summary/Case 17 PostICG F1_11.48.21.661OutputData.mat')
+
+load('./results/Case17/stereoCalibration/stereoParams.mat'); % calibration 2 is better
+outpath = './results/Case17/steroCalibration';
+
+% Line segment coordinates  - closed point first
+I1pts = [104 393 1244 645];
+I2pts = [354 378 938 675];
+
+IR_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_17\ICG_159_color_mask.png';
+MSI_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_17\Case 17 PostICG F1_11_color_mask.png';
+
+%%
+%% Read in the stereo pair of images.
+
+%I1 = imread(strcat(imageNamesIR(i).folder,'/',imageNamesIR(1).name));
+I1 = double(imread(ICG_img));
+I1map = double(imread(IR_img));
+I1map = I1map./255;
+IR_mask = double((imread(IR_img_mask)));
+
+%I1 = histeq(I1);
+%I2 = imread(strcat(imageNamesMSI(i).folder,'/',imageNamesMSI(i).name));
+I2 = imread(MSI_img);
+%I2 = histeq(I2);
+I2 = double(I2);
+MSI_mask = double((imread(MSI_img_mask)));
+
+
+%% Reading MSI output summary data and obtaining oxygen saturation
+THb = MSIoutput.cHbO2 + MSIoutput.cHb;
+SO2 = MSIoutput.cHbO2./THb;
+SO2(MSIoutput.CoD<0.9) = 0;
+SO2(isnan(SO2)) = 0;
+SO2 =  double(repmat(SO2,[1 1 3]));
+THb = THb./max(max(THb));
+THb = double(repmat(THb,[1 1 3]));
+cLd = MSIoutput.cLd;
+cLd = cLd./max(max(cLd));
+cLd =  double(repmat(cLd,[1 1 3]));
+
+
+%% Size match
+if size(I1,1) ~= size(I2,1) && size(I1,2) ~= size(I2,2)
+    I2 = size_match(I1, I2);
+end
+if size(I1,1) ~= size(SO2,1) && size(I1,2) ~= size(SO2,2)
+    SO2 = size_match(double(I1), SO2);
+    THb = size_match(double(I1), THb);
+    cLd = size_match(double(I1), cLd);
+end
+if size(I1,1) ~= size(MSI_mask,1) && size(I1,2) ~= size(MSI_mask,2)
+    MSI_mask = size_match(double(I1), MSI_mask);
+end
+
+%%  % Undistort the images.
+I1 = uint8(undistortImage(I1,stereoParams.CameraParameters1));
+I2 = uint8(undistortImage(I2,stereoParams.CameraParameters2));
+
+I1map = undistortImage(I1map,stereoParams.CameraParameters1);
+SO2 = undistortImage(SO2,stereoParams.CameraParameters2);
+THb = undistortImage(THb,stereoParams.CameraParameters2);
+cLd = undistortImage(cLd,stereoParams.CameraParameters2);
+
+if to_print == 1
+    figure;imshow(I1)
+    figure;imshow(I2)
+end
+if to_save == 1
+    imwrite(I1, strcat(outpath,'/',tag,'_Calibrated_IR.png'));
+    imwrite(I2, strcat(outpath,'/',tag,'_Calibrated_MSI.png'));
+end
+
+
+%%
+% Insert line segment
+I1 = insertShape(I1,'Line',I1pts,'LineWidth',2,'Color','yellow');
+I2 = insertShape(I2,'Line',I2pts,'LineWidth',2,'Color','yellow');
+
+cm_division = 0.5; % whether to have smaller than 1 cm measurement points. 0.5 cm in this case
+% create equidistant points on the line segments
+[I1pts_equidist,I2pts_equidist, cm_steps] = sb_triangulate(I1pts, I2pts, stereoParams, cm_pts, cm_division);
+
+%color = {'red','white','green','magenta'};'blue', 'green', 'red', 'cyan', 'magenta', 'yellow','black', and 'white'
+I1 = insertShape(I1,'FilledCircle',[I1pts_equidist repmat(8,length(I1pts_equidist),1)],'LineWidth',3,'Color','blue');
+I2 = insertShape(I2,'FilledCircle',[I2pts_equidist repmat(8,length(I2pts_equidist),1)],'LineWidth',3,'Color','blue');
+
+if to_print == 1
+    % Show stereo image pairs
+    figure;
+    fig = imshowpair(I1, I2, 'montage');
+    if to_save == 1
+        saveas(fig, strcat(outpath,'/',tag,'_montage_1cm_points_undistort.png'))
+    end
+end
+
+if to_print == 1
+    figure;
+    fig = imshowpair(uint8(I1map*255), uint8(SO2*255), 'montage');
+    colormap(hot);
+    if to_save == 1
+        saveas(fig, strcat(outpath,'/',tag,'_montage_undistort_maps.png'))
+    end
+end
+
+if to_print == 1
+    figure;
+    fig = imagesc(rgb2gray(I1map));
+    axis off; title 'NIR'
+    if to_save == 1
+        saveas(fig, strcat(outpath,'/',tag,'_IR_undistort_map.png'))
+    end
+end
+
+if to_print == 1
+    figure;
+    fig = imagesc(rgb2gray(SO2));
+    axis off;title 'SO2'
+    if to_save == 1
+        saveas(fig, strcat(outpath,'/',tag,'_SO2_undistort_map.png'))
+    end
+end
+
+if to_print == 1
+    figure;
+    fig = imagesc(rgb2gray(THb));
+    axis off;title 'THb'
+    if to_save == 1
+        
+        saveas(fig, strcat(outpath,'/',tag,'_THb_undistort_map.png'))
+    end
+end
+if to_print == 1
+    figure;
+    fig = imagesc(rgb2gray(cLd));
+    axis off;title 'cLd'
+    if to_save == 1
+        saveas(fig, strcat(outpath,'/',tag,'_cLd_undistort_map.png'))
+    end
+end
+
+%% Get the Intensity wrt centimeter measurements
+if wind_or_regmask == 1
+    [I1_crop_mean,SO2_crop_mean, THb_crop_mean, cLd_crop_mean] = MSI_IR_intensity_per_cm(I1map, SO2, I1pts_equidist, I2pts_equidist, THb, cLd)
+elseif wind_or_regmask == 2
+    [I1_crop_mean,SO2_crop_mean, THb_crop_mean, cLd_crop_mean, IR_line_mask_all, MSI_line_mask_all] = MSI_IR_intensity_per_cm_4m_region_mask(I1map, SO2,IR_mask,MSI_mask,I1pts_equidist, I2pts_equidist, THb, cLd);
+    if to_print == 1
+        % Show stereo image pairs
+        %     IR_line_mask_all =  double(repmat(IR_line_mask_all,[1 1 3]));
+        %     MSI_line_mask_all =  double(repmat(MSI_line_mask_all,[1 1 3]));
+        
+        IR_line_masknew(:,:,3) = IR_line_mask_all;
+        IR_line_masknew(:,:,2) = zeros(size(I1(:,:,1)));
+        IR_line_masknew(:,:,1) = zeros(size(I1(:,:,1)));
+        IR_line_mask_all = IR_line_masknew;
+        IR_line_mask_all = IR_line_mask_all.*255+double(I1);
+        
+        MSI_line_masknew(:,:,3) = MSI_line_mask_all;
+        MSI_line_masknew(:,:,2) = zeros(size(I2(:,:,1)));
+        MSI_line_masknew(:,:,1) = zeros(size(I2(:,:,1)));
+        MSI_line_mask_all = MSI_line_masknew;
+        MSI_line_mask_all = MSI_line_mask_all.*255+double(I2);
+               
+        figure;
+        fig = imshowpair(uint8(IR_line_mask_all), uint8(MSI_line_mask_all), 'montage');
+        if to_save == 1
+            saveas(fig, strcat(outpath,'/',tag,'_montage_1cm_points_undistort.png'))
+        end
+    end
+end
+
+if to_print == 1
+    figure;
+    fig =plot(cm_steps, I1_crop_mean,'b--o','LineWidth',2 );hold on;
+    fig =plot(cm_steps,SO2_crop_mean,'r-.o','LineWidth',2);
+    fig =plot(cm_steps,THb_crop_mean,'g:o','LineWidth',2);
+    fig =plot(cm_steps,cLd_crop_mean,'m-o','LineWidth',2);
+    xlabel('Distance (cm)');
+    ylabel('Intensity');
+    ylim = ([0 1]);
+    legend('NIR','SO2', 'THb','cLd')
+    if to_save == 1
+        saveas(fig, strcat(outpath,'/',tag,'_Intensity_measurements.png'))
+        save(strcat(outpath,'/',tag,'_Intensity_measurements.mat'),'I1_crop_mean','SO2_crop_mean','THb_crop_mean','cLd_crop_mean','cm_steps')
+    end
+end
+
+
+%% ------------------------FUNCTIONS--------------------------------------
+%% Triangulate to get equidist points
+function [I1pts_equidist,I2pts_equidist, cm_steps_new]  =  sb_triangulate(I1pts, I2pts, stereoParams, cm_pts, cm_division)
+no_points = 399;
+I1pts_lineseg(:,1) = linspace(I1pts(1,1), I1pts(1,3), no_points)';
+I1pts_lineseg(:,2) = linspace(I1pts(1,2), I1pts(1,4), no_points)';
+
+I2pts_lineseg(:,1) = linspace(I2pts(1,1), I2pts(1,3), no_points)';
+I2pts_lineseg(:,2) = linspace(I2pts(1,2), I2pts(1,4), no_points)';
+
+
+%% Triagulate equidistant points to get their distance from camera 1
+for i = 1: no_points
+    center1 = round(I1pts_lineseg(i,:));
+    center2 = round(I2pts_lineseg(i,:));
+    %%
+    % Compute the distance from camera 1 to the point.
+    % in centimeter
+    point3d(i,:) = (triangulate(center1, center2, stereoParams))/10;
+    %distanceInMeters = norm(point3d)/1000;
+end
+
+%% Distance between triagulared points
+DD = squareform(pdist(point3d(:,1:2)));
+DDR1 = DD(1,:);
+
+%% Mark distances at 1cm spaces
+
+cm_steps = 0:cm_division:cm_pts;
+for i = 1 :length(cm_steps)
+    [val(i), idx(i)] = min(abs(DDR1-cm_steps(i)));
+    if idx(i) == no_points
+        break;
+    end
+end
+cm_steps_new = cm_steps(1:i);
+I1pts_equidist = I1pts_lineseg(idx,:);
+I2pts_equidist = I2pts_lineseg(idx,:);
+
+end
+
+%% Calculate the mean at each cm distance in IR and MSI images and plot the intensity wrt cm
+function [I1_crop_mean,SO2_crop_mean, THb_crop_mean, cLd_crop_mean] = MSI_IR_intensity_per_cm(I1, SO2, I1pts_equidist, I2pts_equidist, THb, cLd)
+wind_siz = 10;
+I1 = mat2gray(I1);
+SO2 = mat2gray(SO2);
+THb = rgb2gray(THb);
+cLd = rgb2gray(cLd);
+for i = 1:length(I1pts_equidist)
+    minx_I1crop(i) = floor(I1pts_equidist(i,1))- wind_siz/2;
+    miny_I1crop(i) = floor(I1pts_equidist(i,2))- wind_siz/2;
+    
+    I1_crop = imcrop(I1, [minx_I1crop(i), miny_I1crop(i), wind_siz-1, wind_siz-1]);
+    I1_crop(I1_crop==0) = [];
+    I1_crop_mean(i) = mean(I1_crop(:));
+    
+    %% SO2
+    minx_SO2crop(i) = floor(I2pts_equidist(i,1))- wind_siz/2;
+    miny_SO2crop(i) = floor(I2pts_equidist(i,2))- wind_siz/2;
+    
+    SO2_crop = imcrop(SO2, [minx_SO2crop(i), miny_SO2crop(i), wind_siz, wind_siz]);
+    SO2_crop(SO2_crop==0) = [];
+    if isempty(SO2_crop)
+        SO2_crop_mean(i) = 0;
+    else
+        SO2_crop_mean(i) = mean(SO2_crop(:));
+    end
+    
+    %% THb
+    THb_crop = imcrop(THb, [minx_SO2crop(i), miny_SO2crop(i), wind_siz, wind_siz]);
+    THb_crop(THb_crop==0) = [];
+    if isempty(THb_crop)
+        THb_crop_mean(i) = 0;
+    else
+        THb_crop_mean(i) = mean(THb_crop(:));
+    end
+    
+    %% cLd
+    cLd_crop = imcrop(cLd, [minx_SO2crop(i), miny_SO2crop(i), wind_siz, wind_siz]);
+    cLd_crop(cLd_crop==0) = [];
+    if isempty(cLd_crop)
+        cLd_crop_mean(i) = 0;
+    else
+        cLd_crop_mean(i) = mean(cLd_crop(:));
+    end
+    
+end
+%cm_dist = 0:length(I1pts_equidist)-1;
+end
+
+%% Calculate the mean at each cm distance in IR and MSI images and plot the intensity wrt cm
+function [I1_crop_mean,SO2_crop_mean, THb_crop_mean, cLd_crop_mean, IR_line_mask_all, MSI_line_mask_all] = MSI_IR_intensity_per_cm_4m_region_mask(I1map, SO2,IR_mask,MSI_mask,I1pts_equidist, I2pts_equidist, THb, cLd)
+inter_point_length = 0.5;
+offset = 250;
+IR_mask = rgb2gray(uint8(IR_mask));
+IR_mask(IR_mask>250) = 0;
+IR_mask(IR_mask<50) = 0;
+IR_mask(IR_mask>50) = 255;
+MSI_mask = rgb2gray(uint8(MSI_mask));
+MSI_mask(MSI_mask>250) = 0;
+MSI_mask(MSI_mask<50) = 0;
+MSI_mask(MSI_mask>50) = 255;
+
+% I1mmap --get tangent lines, dilate, create mask and compute mean
+I1map = rgb2gray(I1map);
+I1_P1 = I1pts_equidist(1,:);
+I1_P2 = I1pts_equidist(2,:);
+
+dd = round(sqrt((I1_P2(1,1)-I1_P1(1,1))^2+(I1_P2(1,2)-I1_P1(1,2))^2));
+
+m = (I1_P2(1,2) - I1_P1(1,2))/(I1_P2(1,1) - I1_P1(1,1));
+PLm = tan(atan(m)+pi/2);   % slope of perpendicular line
+I1_crop =[];
+IR_line_mask_all = zeros(size(IR_mask));
+for i = 1:length(I1pts_equidist)
+    I1_P1 = I1pts_equidist(i,:);
+    PLc1 = I1_P1(1,2) - PLm*I1_P1(1,1);     % Y intercept
+    
+%    if PLm <0
+        yoffset = I1_P1(1,2)-offset:1:I1_P1(1,2) +  offset;
+        pt_ortho1 =  [(yoffset-PLc1)/PLm; yoffset];
+%    else
+%        xoffset = I1_P1(1,1)-offset:1:I1_P1(1,1) +  offset;
+%        pt_ortho1 = [xoffset; PLm*(xoffset+PLc1)];
+%    end
+    
+    IR_line_mask = zeros(size(IR_mask));
+    
+    for kk = 1: length(pt_ortho1)
+        if round(pt_ortho1(2,kk))>=1 && round(pt_ortho1(2,kk)) <=size(IR_mask,1)
+            if round(pt_ortho1(1,kk))>=1 && round(pt_ortho1(1,kk)) <=size(IR_mask,2)
+                IR_line_mask(round(pt_ortho1(2,kk)),round(pt_ortho1(1,kk))) = 255;
+            end
+        end
+    end
+    SE = strel('square',round(dd*inter_point_length));
+    IR_line_mask = imdilate(IR_line_mask,SE);
+    
+    IR_line_mask= IR_line_mask&IR_mask;
+    
+    IR_line_mask_all = IR_line_mask_all + IR_line_mask;
+    
+    if i~=length(I1pts_equidist)
+        I1_P2 = I1pts_equidist(i+1,:);
+        dd = round(sqrt((I1_P2(1,1)-I1_P1(1,1))^2+(I1_P2(1,2)-I1_P1(1,2))^2));
+    end
+    
+    I1_crop = I1map.*(IR_line_mask);
+    I1_crop(I1_crop==0) = [];
+    I1_crop_mean(i) = mean(I1_crop(:));
+    
+    %         figure;imshow(IR_line_mask+rgb2gray(I1))
+    %         figure;imshow(IR_line_mask&IR_mask)
+end
+
+%figure;imshow(IR_line_mask_all+I1map)
+% I1mmap --get tangent lines, dilate, create mask and compute mean
+SO2 = rgb2gray(SO2);
+THb = rgb2gray(THb);
+cLd = rgb2gray(cLd);
+
+I2_P1 = I2pts_equidist(1,:);
+I2_P2 = I2pts_equidist(2,:);
+
+dd = round(sqrt((I2_P2(1,1)-I2_P1(1,1))^2+(I2_P2(1,2)-I2_P1(1,2))^2));
+
+m = (I2_P2(1,2) - I2_P1(1,2))/(I2_P2(1,1) - I2_P1(1,1));
+PLm = tan(atan(m)+pi/2);   % slope of perpendicular line
+SO2_crop =[];
+MSI_line_mask_all = zeros(size(IR_mask));
+for i = 1:length(I2pts_equidist)
+    I2_P1 = I2pts_equidist(i,:);
+    PLc1 = I2_P1(1,2) - PLm*I2_P1(1,1);     % Y intercept
+    
+    yoffset = I2_P1(1,2)-offset:1:I2_P1(1,2) +  offset;
+    pt_ortho1 =  [(yoffset-PLc1)/PLm; yoffset];
+    
+    MSI_line_mask = zeros(size(MSI_mask));
+    
+    for kk = 1: length(pt_ortho1)
+        if round(pt_ortho1(2,kk))>=1 && round(pt_ortho1(2,kk)) <=size(MSI_mask,1)
+            if round(pt_ortho1(1,kk))>=1 && round(pt_ortho1(1,kk)) <=size(MSI_mask,2)
+                
+                MSI_line_mask(round(pt_ortho1(2,kk)),round(pt_ortho1(1,kk))) = 255;
+            end
+        end
+    end
+    SE = strel('square',round(dd*inter_point_length));
+    MSI_line_mask = imdilate(MSI_line_mask,SE);
+    
+    MSI_line_mask= MSI_line_mask&MSI_mask;
+    MSI_line_mask_all = MSI_line_mask_all + MSI_line_mask;
+    
+    if i~=length(I2pts_equidist)
+        I2_P2 = I2pts_equidist(i+1,:);
+        dd = round(sqrt((I2_P2(1,1)-I2_P1(1,1))^2+(I2_P2(1,2)-I2_P1(1,2))^2));
+    end
+    
+    %%SO2
+    SO2_crop = SO2.*(MSI_line_mask);
+    SO2_crop(SO2_crop==0) = [];
+    if isempty(SO2_crop)
+        SO2_crop_mean(i) = 0;
+    else
+        SO2_crop_mean(i) = mean(SO2_crop(:));
+    end
+    
+    %%THb
+    THb_crop = THb.*(MSI_line_mask);
+    THb_crop(THb_crop==0) = [];
+    if isempty(THb_crop)
+        THb_crop_mean(i) = 0;
+    else
+        THb_crop_mean(i) = mean(THb_crop(:));
+    end
+    
+    %% cLd
+    cLd_crop = cLd.*(MSI_line_mask);
+    cLd_crop(cLd_crop==0) = [];
+    if isempty(cLd_crop)
+        cLd_crop_mean(i) = 0;
+    else
+        cLd_crop_mean(i) = mean(cLd_crop(:));
+    end
+    
+end
+end
+
+% make I2 to be of same size as I1 by zero padding
+function I2new = size_match(I1, I2)
+siz_I1 = size(I1);
+siz_I2 = size(I2);
+sizdiff_half = [(siz_I1(1,1) - siz_I2(1,1))/2 , (siz_I1(1,2) - siz_I2(1,2))/2];
+
+I2new = double(zeros(siz_I1(1),siz_I1(2),3));
+I2new(sizdiff_half(1,1):size(I2,1)+sizdiff_half(1,1)-1,sizdiff_half(1,2):size(I2,2)+sizdiff_half(1,2)-1,:) = I2new(1:size(I2,1),1:size(I2,2),:) + I2;
+
+end
+%%
