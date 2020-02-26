@@ -5,7 +5,7 @@ clear all;
 close all; clc
 
 to_print = 1; % if 1 print if 0 no print
-to_save = 0; % if 1 save to results folder if 0 donot save
+to_save = 1; % if 1 save to results folder if 0 donot save
 wind_or_regmask =2; %if 1 use mean of window size if 2 use mean of the whole region obtained using the mask
 
 % Load stereo parameters.
@@ -358,25 +358,67 @@ wind_or_regmask =2; %if 1 use mean of window size if 2 use mean of the whole reg
 % MSI_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_16\Case 16 PostICG F1_13_color_mask.png';
 
 % %% CASE 17  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cm_pts = 10;
+% 
+% tag ='Case17_PostICG';
+% 
+% IR_img = './data/Case17/IR/ICG_min_max/IR_159_upsize.png';
+% ICG_img = './data/Case17/IR/ICG_min_max/ICG_159.png';
+% 
+% MSI_img = './MSI output summary/Case 17 PostICG F1_11.48.21.661_RGB.png';
+% load('./MSI output summary/Case 17 PostICG F1_11.48.21.661OutputData.mat')
+% 
+% load('./results/Case17/stereoCalibration/stereoParams.mat'); % calibration 2 is better
+% outpath = './results/Case17/steroCalibration';
+% 
+% % Line segment coordinates  - closed point first
+% I1pts = [104 393 1244 645];
+% I2pts = [354 378 938 675];
+% 
+% IR_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_17\ICG_159_color_mask.png';
+% MSI_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_17\Case 17 PostICG F1_11_color_mask.png';
+
+%%% CASE 18  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% cm_pts = 10;
+% 
+% tag ='Case18_PostICG';
+% 
+% IR_img = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\Case18\IR\228.000_IR upsize.png';
+% ICG_img = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\Case18\IR\228.000.png';
+% 
+% MSI_img = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\Case18\MSI\Case 18 PostICG F1_13.25.25.767_RGB.png';
+% load('./MSI output summary/Case 18 PostICG F1_13.25.25.767OutputData.mat')
+% 
+% load('./results/Case18/stereoCalibration/stereoParams.mat'); 
+% outpath = './results/Case18/stereoCalibration';
+% 
+% % Line segment coordinates  - closed point first
+% I1pts = [156 430 1126 544];
+% I2pts = [531 417 1056 544];
+% 
+% IR_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_18\228_color_mask.png';
+% MSI_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_18\Case 18 PostICG F1_13_color_mask.png';
+
+%%% CASE 19  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 cm_pts = 10;
 
-tag ='Case17_PostICG';
+tag ='Case19_PostICG';
 
-IR_img = './data/Case17/IR/ICG_min_max/IR_159_upsize.png';
-ICG_img = './data/Case17/IR/ICG_min_max/ICG_159.png';
+IR_img = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\Case19\IR\277.500_IR upsize.png';
+ICG_img = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\Case19\IR\277.500.png';
 
-MSI_img = './MSI output summary/Case 17 PostICG F1_11.48.21.661_RGB.png';
-load('./MSI output summary/Case 17 PostICG F1_11.48.21.661OutputData.mat')
+MSI_img = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\Case19\MSI\Case 19 PostICG F1_17.00.46.126_RGB.png';
+load('./MSI output summary/Case 19 PostICG F1_17.00.46.126OutputData.mat')
 
-load('./results/Case17/stereoCalibration/stereoParams.mat'); % calibration 2 is better
-outpath = './results/Case17/steroCalibration';
+load('./results/Case19/stereoCalibration/stereoParams.mat'); 
+outpath = './results/Case19/stereoCalibration';
 
 % Line segment coordinates  - closed point first
-I1pts = [104 393 1244 645];
-I2pts = [354 378 938 675];
+I1pts = [753 484 99 349];
+I2pts = [635 637 336 405];
 
-IR_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_17\ICG_159_color_mask.png';
-MSI_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_17\Case 17 PostICG F1_11_color_mask.png';
+IR_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_19\277_color_mask.png';
+MSI_img_mask = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\data_masks\Case_19\Case 19 PostICG F1_17_color_mask.png';
 
 %%
 %% Read in the stereo pair of images.
