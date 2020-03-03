@@ -1,0 +1,41 @@
+% Read an Image, get the RGB crop, open the image to let select a Region of
+% Interest Box (rectangle/square, return an average pixel intensity (R,G,B)
+% for the box.
+
+clear all;close all;clc
+
+workingDir = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\Case18_ICG_stack'
+
+imageNames = dir(fullfile(workingDir,'*.png'));
+i = 1;
+img = imread(strcat(imageNames(i).folder,'/',imageNames(i).name));
+
+% To get overlay image
+%img = imcrop(img, [481,1,1920-481,1080-1]);
+
+% To get IR image crop use the following
+%img = imcrop(img, [1, 361, 480-1, 360-1]);
+
+% To get RGB image crop use the following
+img = imcrop(img, [1, 1, 480-1, 360-1]);
+
+% Upscale image
+img = imresize(img,3);
+
+
+%% Draw region of interest on the point
+figure;imshow(img)
+r1 = drawrectangle('Label','ROIselect','Color',[0 1 0]);
+
+%% Crop and show the selected region
+imgROI = imcrop(img, r1.Position);
+figure;imshow(imgROI)
+
+% Mean value of the R G B channels  Range 0-255
+NormRGB = [mean2(imgROI(:,:,1)) mean2(imgROI(:,:,2)) mean2(imgROI(:,:,3))]
+
+% Mean value of the R G B channels  Range 0-1 
+NormRGB0_1 = [NormRGB(1)/255 NormRGB(2)/255 NormRGB(3)/255]
+
+
+
