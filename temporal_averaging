@@ -1,0 +1,39 @@
+%% This function crop the small IR image from a stack of perfused images (lets say 10 images), compute their average and create the average IR mask 
+
+clear all; close all; clc
+
+workingDir = 'C:\Users\anton\Desktop\PhD\Chapter #2 - MSI + Fluorescence\codeIRMSI_case1-17\data\Case19_ICG_stack'
+imageNames = dir(fullfile(workingDir,'*.png'));
+
+%% Save the output to 'IR_temporal_avg_image' folder
+
+output_path =strcat(strcat(imageNames(1).folder,'/IR_temporal_avg_image'));
+mkdir(output_path);
+for i = 1: length(imageNames)
+    img = imread(strcat(imageNames(i).folder,'/',imageNames(i).name));
+    %img = imcrop(img, [481,6,1920-481,1075-6]); 
+    %img = imcrop(img, [481,1,1920-481,1080-1]); 
+    img = imcrop(img, [1, 361, 480-1, 360-1]); 
+    
+    % TO get RGB image crop use the following 
+    %img = imcrop(img, [1, 1, 480-1, 360-1]); 
+    
+    imgR(:,:,i) = img(:,:,1); % Red
+    imgG(:,:,i) = img(:,:,2);  % Green
+    imgB(:,:,i) = img(:,:,3);  % Blue
+    
+    %img = imresize(img,3);
+    %imwrite(img, strcat(imageNames(i).folder,'/',imageNames(i).name));
+    %figure;imshow(img)
+    
+end
+img_avg(:,:,1) = uint8(mean(imgR,3));
+img_avg(:,:,2) = uint8(mean(imgG,3));
+img_avg(:,:,3) = uint8(mean(imgB,3));
+
+% Upscale average mask
+img_avg = imresize(img_avg,3);
+
+% save average mask - with the name as of the last file in the stack
+imwrite(img_avg, strcat(output_path,'/',imageNames(i).name));
+
